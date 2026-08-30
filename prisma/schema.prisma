@@ -1,0 +1,159 @@
+// =========================================================================
+// ESQUEMA DE BASE DE DATOS PRISMA (TIENDA ONLINE MULTI-COMERCIO)
+// =========================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. USUARIOS ADMINISTRADORES (Panel de Control)
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  passwordHash String   // Encriptado con bcrypt
+  role         String   @default("ADMIN") // ADMIN, MANAGER
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+// 2. CATEGORÍAS DE PRODUCTOS
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  iconName    String?   @default("Shirt")
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// 3. PRODUCTOS / PRENDAS DE INDUMENTARIA
+model Product {
+  id            String      @id @default(uuid())
+  name          String
+  slug          String      @unique
+  description   String
+  price         Float
+  originalPrice Float?      // Precio anterior para ofertas
+  categoryId    String
+  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images        String      // Array de URLs de imágenes guardado en formato JSON string
+  sizes         String?     // Array de talles disponibles (ej: ["S","M","L","XL"]) en formato JSON
+  colors        String?     // Array de colores (ej: [{"name":"Negro","hex":"#18181b"}]) en formato JSON
+  stock         Int         @default(10)
+  featured      Boolean     @default(false)
+  isOffer       Boolean     @default(false)
+  isNew         Boolean     @default(true)
+  active        Boolean     @default(true)
+  sku           String?     @unique
+  tags          String?     // Tags separados por coma o JSON
+  orderItems    OrderItem[]
+  couponProducts CouponProduct[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
+}
+
+// 4. PEDIDOS REALIZADOS POR COMPRADORES
+model Order {
+  id                   String      @id @default(uuid())
+  orderNumber          String      @unique // Ej: AUR-74829
+  customerName         String
+  customerPhone        String
+  customerEmail        String?
+  deliveryType         String      // "delivery" (Envío) | "pickup" (Retiro en local)
+  address              String?
+  apartment            String?     // Piso / Depto
+  city                 String?
+  postalCode           String?
+  notes                String?     // Notas o aclaraciones
+  subtotal             Float
+  discountTotal        Float       @default(0)
+  couponCode           String?
+  shippingCost         Float       @default(0)
+  total                Float
+  paymentMethod        String      @default("whatsapp") // "whatsapp", "mercadopago", "bank_transfer", "cash"
+  paymentStatus        String      @default("pending")  // "pending", "approved", "rejected"
+  orderStatus          String      @default("pending")  // "pending", "preparing", "ready", "delivered", "cancelled"
+  mercadoPagoPaymentId String?     // ID de pago devuelto por Mercado Pago
+  items                OrderItem[]
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+// 5. CUPONES DE DESCUENTO ADMINISTRABLES
+model Coupon {
+  id              String           @id @default(uuid())
+  code            String           @unique
+  type            String           // "percentage" | "fixed"
+  value           Float
+  active          Boolean          @default(true)
+  expiresAt       DateTime?
+  minPurchase     Float?
+  scope           String           @default("all") // "all" | "categories" | "products"
+  categoryIds     String?          // Array JSON de IDs de categorías
+  products        CouponProduct[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("coupons")
+}
+
+model CouponProduct {
+  id        String   @id @default(uuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, productId])
+  @@map("coupon_products")
+}
+
+// 6. ÍTEMS DETALLADOS DENTRO DE UN PEDIDO (Con Talle y Color fijados)
+model OrderItem {
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName  String
+  productImage String?
+  price        Float
+  quantity     Int      @default(1)
+  size         String?  // Talle elegido (ej: "M", "42")
+  color        String?  // Color elegido (ej: "Negro Profundo")
+  subtotal     Float
+  createdAt    DateTime @default(now())
+
+  @@map("order_items")
+}
+
+// 7. CONFIGURACIÓN DINÁMICA DEL COMERCIO (Editable desde Admin)
+model StoreSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique // Clave de configuración (ej: "store_name", "whatsapp_number", "shipping_cost")
+  value       String   // Valor guardado
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("store_settings")
+}

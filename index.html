@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LORELEY - Indumentaria & Tendencias</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#18181b">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col justify-between selection:bg-zinc-900 selection:text-white">
+
+  <!-- 1. Barra Superior de Anuncios -->
+  <div class="bg-zinc-950 text-white text-xs py-2 px-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span class="font-medium tracking-wide">Envíos a todo el país y retiro en local.</span>
+      </div>
+      <div class="hidden md:flex items-center gap-4 text-stone-300">
+        <span>📍 Showroom Palermo Soho (Gorriti 4850)</span>
+        <a href="https://wa.me/5491140648304" target="_blank" class="hover:text-white flex items-center gap-1 text-emerald-400 font-semibold">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          <span>WhatsApp: +54 9 11 4064-8304</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Navbar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
+        
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2 sm:gap-3 group shrink-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-black text-lg sm:text-xl tracking-tighter shadow-md font-mono">
+            L
+          </div>
+          <div>
+            <span class="text-lg sm:text-2xl font-black tracking-widest text-zinc-900 block leading-tight font-mono">LORELEY</span>
+            <span class="text-[9px] sm:text-[10px] font-semibold text-stone-400 tracking-widest uppercase block">INDUMENTARIA</span>
+          </div>
+        </a>
+
+        <!-- Buscador (Desktop) -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+          <div class="relative w-full">
+            <input
+              type="text"
+              id="searchInput"
+              oninput="filterProducts()"
+              placeholder="Buscar por prenda, buzo, jean, color..."
+              class="w-full pl-10 pr-4 py-2.5 bg-stone-100 border border-stone-200 rounded-full text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-900 transition-all"
+            />
+            <i data-lucide="search" class="absolute left-3.5 top-3 w-4 h-4 text-stone-400"></i>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          
+          <!-- BOTÓN INICIAR SESIÓN / PANEL ADMIN -->
+          <button
+            onclick="openAdminLoginModal()"
+            class="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-zinc-800 bg-stone-100 hover:bg-stone-200 rounded-full transition-colors border border-stone-200 cursor-pointer active:scale-95"
+            title="Panel de Control para el dueño"
+          >
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-zinc-900"></i>
+            <span class="hidden sm:inline">Iniciar Sesión</span>
+            <span class="sm:hidden text-[11px]">Admin</span>
+          </button>
+
+          <a
+            href="https://wa.me/5491140648304?text=¡Hola LORELEY! Tengo una consulta sobre una prenda."
+            target="_blank"
+            class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-full transition-colors border border-emerald-200"
+          >
+            <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+            <span>Atención Online</span>
+          </a>
+
+          <!-- Botón Carrito / Bolsa -->
+          <button
+            onclick="toggleCart()"
+            class="relative flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-zinc-900 text-white rounded-full font-bold text-xs uppercase tracking-wider shadow-md hover:bg-zinc-800 active:scale-95 transition-all cursor-pointer"
+          >
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+            <span class="text-[11px] sm:text-xs">Bolsa</span>
+            <span id="cartBadge" class="hidden px-1.5 py-0.2 text-[10px] sm:text-xs font-black bg-amber-500 text-zinc-950 rounded-full">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador Móvil -->
+      <div class="md:hidden pb-3">
+        <div class="relative w-full">
+          <input
+            type="text"
+            id="searchInputMobile"
+            oninput="filterProductsMobile()"
+            placeholder="Buscar prendas, buzos, jeans..."
+            class="w-full pl-10 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-full text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+          />
+          <i data-lucide="search" class="absolute left-3.5 top-2.5 w-4 h-4 text-stone-400"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. Banner Hero -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white py-14 sm:py-20 px-4 sm:px-6 lg:px-8 rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-6 shadow-2xl">
+    <div class="relative max-w-4xl mx-auto text-center space-y-6">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-semibold text-amber-300">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        <span>Nueva Colección LORELEY 2026</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight uppercase font-mono">
+        Prendas Esenciales de Calidad Superior
+      </h1>
+
+      <p class="max-w-2xl mx-auto text-sm sm:text-base text-stone-300 leading-relaxed font-normal">
+        Diseño exclusivo, algodón de alto gramaje y calces perfectos. Elegí tu talle y color y recibí tu pedido en cualquier punto del país.
+      </p>
+
+      <div class="pt-2">
+        <a href="#catalogo" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-zinc-950 hover:bg-stone-100 font-black text-xs uppercase tracking-widest rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all">
+          <span>Ver Colección</span>
+          <i data-lucide="arrow-down" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Filtro de Categorías -->
+  <section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center gap-2 overflow-x-auto pb-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0" id="categoryContainer"></div>
+  </section>
+
+  <!-- 5. Grid de Productos -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1 w-full space-y-6">
+    <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-stone-200 shadow-2xs">
+      <span id="productCounter" class="text-sm font-bold text-stone-900">Mostrando prendas</span>
+      <span class="text-xs text-stone-500 font-medium">✨ Seleccioná talle y color al comprar</span>
+    </div>
+
+    <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </main>
+
+  <!-- 6. Modal de Selección de Talle & Color -->
+  <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-xs">
+    <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-stone-200 flex flex-col md:flex-row max-h-[90vh]">
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-20 p-2 text-stone-400 hover:text-stone-900 bg-white rounded-full shadow-md">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-full md:w-1/2 aspect-[3/4] bg-stone-100 overflow-hidden">
+        <img id="modalImage" src="" alt="" class="w-full h-full object-cover" />
+      </div>
+
+      <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto space-y-4">
+        <div class="space-y-3">
+          <span id="modalCategory" class="text-xs font-black text-stone-400 uppercase tracking-widest"></span>
+          <h2 id="modalTitle" class="text-xl font-black text-stone-900 leading-tight"></h2>
+          <div class="flex items-baseline gap-3">
+            <span id="modalPrice" class="text-2xl font-black text-stone-900"></span>
+            <span id="modalOriginalPrice" class="text-sm text-stone-400 line-through"></span>
+          </div>
+
+          <!-- Selector de Talle -->
+          <div id="modalSizeSection" class="space-y-1.5 pt-2 border-t border-stone-100">
+            <span class="text-xs font-bold text-stone-800 uppercase tracking-wider block">Seleccionar Talle:</span>
+            <div id="modalSizesContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Selector de Color -->
+          <div id="modalColorSection" class="space-y-1.5 pt-2">
+            <span class="text-xs font-bold text-stone-800 uppercase tracking-wider block">Seleccionar Color:</span>
+            <div id="modalColorsContainer" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <p id="modalDescription" class="text-xs text-stone-500 leading-relaxed pt-1"></p>
+        </div>
+
+        <div class="space-y-2 pt-4 border-t border-stone-100">
+          <button onclick="addCurrentModalToCart()" class="w-full py-3.5 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-xl transition-all cursor-pointer">
+            Agregar a la Bolsa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Drawer Lateral del Carrito -->
+  <div id="cartBackdrop" onclick="toggleCart()" class="fixed inset-0 z-50 bg-zinc-950/60 hidden"></div>
+  <div id="cartDrawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out">
+    
+    <div class="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-zinc-900"></i>
+        <h3 class="font-black text-zinc-900 text-base uppercase tracking-wider">Tu Bolsa</h3>
+      </div>
+      <button onclick="toggleCart()" class="p-2 text-stone-400 hover:text-stone-900 bg-white rounded-full border border-stone-200">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Lista de ítems -->
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+
+    <!-- Footer Carrito -->
+    <div id="cartFooter" class="p-5 border-t border-stone-100 bg-stone-50 space-y-4 hidden">
+      <div class="flex justify-between items-center text-sm font-bold text-stone-800">
+        <span>Subtotal:</span>
+        <span id="cartSubtotal" class="text-lg text-zinc-900 font-black">$ 0</span>
+      </div>
+      <button onclick="openCheckoutModal()" class="w-full py-4 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm uppercase tracking-wider rounded-2xl shadow-xl flex items-center justify-center gap-2 cursor-pointer">
+        <span>Iniciar Compra / Checkout</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 8. Modal de Checkout / Formulario de Compra -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-zinc-950/85 backdrop-blur-xs overflow-y-auto">
+    <div class="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border border-stone-200 my-8 space-y-6">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+        <div>
+          <span class="text-xs font-black text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-widest">Paso Final</span>
+          <h3 class="text-xl font-black text-zinc-900 uppercase font-mono mt-1">Datos de tu Pedido</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="p-2 text-stone-400 hover:text-stone-900 bg-stone-100 rounded-full">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Selector de Entrega -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-stone-800 uppercase tracking-wider">Forma de Entrega:</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="setDeliveryType('delivery')" id="btnDelivery" class="p-3.5 rounded-2xl border-2 border-zinc-900 bg-stone-50 font-bold text-xs text-left">
+            🚚 Envío a Domicilio
+          </button>
+          <button type="button" onclick="setDeliveryType('pickup')" id="btnPickup" class="p-3.5 rounded-2xl border border-stone-200 hover:border-stone-300 font-bold text-xs text-left">
+            🏬 Retiro Showroom (Gratis)
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-stone-700 uppercase tracking-wider block mb-1">Nombre y Apellido *</label>
+          <input type="text" id="custName" placeholder="Ej: Carolina Pérez" class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20" />
+        </div>
+        <div>
+          <label class="font-bold text-stone-700 uppercase tracking-wider block mb-1">Teléfono / WhatsApp *</label>
+          <input type="tel" id="custPhone" placeholder="Ej: 11 3456-7890" class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20" />
+        </div>
+        <div id="addressFields">
+          <label class="font-bold text-stone-700 uppercase tracking-wider block mb-1">Dirección de Entrega y Ciudad *</label>
+          <input type="text" id="custAddress" placeholder="Ej: Gorriti 4850, 2do A - Palermo, CABA" class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20" />
+        </div>
+        <div>
+          <label class="font-bold text-stone-700 uppercase tracking-wider block mb-1">Notas / Aclaraciones (Opcional)</label>
+          <input type="text" id="custNotes" placeholder="Ej: Empaquetar para regalo..." class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900/20" />
+        </div>
+      </div>
+
+      <!-- Total Final y Botón WhatsApp -->
+      <div class="pt-4 border-t border-stone-100 space-y-3">
+        <div class="flex justify-between items-center font-bold text-sm">
+          <span>Total a Pagar:</span>
+          <span id="checkoutGrandTotal" class="text-2xl font-black text-zinc-900">$ 0</span>
+        </div>
+        <button onclick="submitOrderToWhatsApp()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+          <span>Enviar Pedido a WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. MODAL DE INICIO DE SESIÓN DE ADMINISTRADOR (100% CENTRADO EN MÓVILES) -->
+  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 bg-zinc-950/85 backdrop-blur-xs overflow-y-auto">
+    <div class="relative w-full max-w-sm sm:max-w-md bg-zinc-900 text-white rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 border border-zinc-800 space-y-4 sm:space-y-5 my-auto">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-white text-zinc-950 font-black flex items-center justify-center font-mono text-sm">L</div>
+          <h3 class="font-black text-sm sm:text-base uppercase font-mono tracking-wider">Acceso Administrador</h3>
+        </div>
+        <button onclick="closeAdminLoginModal()" class="p-1.5 text-zinc-400 hover:text-white rounded-full bg-zinc-800/60">
+          <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </button>
+      </div>
+
+      <!-- Alerta de error si alguien ingresa mal -->
+      <div id="loginErrorMsg" class="hidden p-3 bg-red-950/60 border border-red-800 text-red-300 text-xs rounded-xl flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 text-red-400 shrink-0"></i>
+        <span>Email o contraseña incorrectos.</span>
+      </div>
+
+      <div class="space-y-3 sm:space-y-4 text-xs">
+        <div>
+          <label class="font-bold text-zinc-300 uppercase tracking-wider block mb-1">Email de Administrador</label>
+          <input type="email" id="adminEmail" value="" placeholder="tu-email@loreley.com" class="w-full px-3.5 py-2.5 sm:py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 font-mono" />
+        </div>
+        <div>
+          <label class="font-bold text-zinc-300 uppercase tracking-wider block mb-1">Contraseña</label>
+          <input type="password" id="adminPass" value="" placeholder="••••••••" class="w-full px-3.5 py-2.5 sm:py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 font-mono" />
+        </div>
+
+        <button onclick="handleAdminLogin()" class="w-full py-3 sm:py-3.5 bg-white hover:bg-zinc-100 text-zinc-950 font-black text-xs uppercase tracking-widest rounded-xl shadow-xl transition-all cursor-pointer">
+          Ingresar al Panel de Control
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. MODAL DEL PANEL DE CONTROL (AGREGAR / CAMBIAR PRENDAS) -->
+  <div id="adminPanelModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 bg-zinc-950/85 backdrop-blur-xs overflow-y-auto">
+    <div class="relative w-full max-w-2xl sm:max-w-3xl bg-white text-zinc-900 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 border border-stone-200 my-auto space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3 sm:pb-4">
+        <div>
+          <span class="text-[10px] sm:text-xs font-bold text-emerald-700 bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider">Sesión Iniciada</span>
+          <h3 class="text-base sm:text-xl font-black uppercase font-mono mt-0.5 sm:mt-1">Panel de Control LORELEY</h3>
+        </div>
+        <button onclick="closeAdminPanelModal()" class="p-1.5 sm:p-2 text-stone-400 hover:text-stone-900 rounded-full bg-stone-100">
+          <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </button>
+      </div>
+
+      <!-- Formulario para Agregar Nueva Prenda -->
+      <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 space-y-4">
+        <h4 class="font-bold text-xs uppercase tracking-wider text-zinc-900 flex items-center gap-1.5">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Cargar / Agregar Nueva Prenda al Catálogo</span>
+        </h4>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div class="sm:col-span-2">
+            <label class="font-bold text-stone-600 block mb-1">Nombre de la Prenda *</label>
+            <input type="text" id="newProdName" placeholder="Ej: Tapado Largo de Paño Premium" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl" />
+          </div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Categoría *</label>
+            <select id="newProdCategory" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl font-bold">
+              <option>Remeras & Tops</option>
+              <option>Buzos & Hoodies</option>
+              <option>Camperas & Tapados</option>
+              <option>Jeans & Denim</option>
+              <option>Pantalones & Cargos</option>
+              <option>Vestidos & Monos</option>
+              <option>Accesorios</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Precio ($) *</label>
+            <input type="number" id="newProdPrice" placeholder="58000" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl font-bold" />
+          </div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Talles (separados por coma)</label>
+            <input type="text" id="newProdSizes" placeholder="S, M, L, XL" value="S, M, L, XL" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl" />
+          </div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Colores (separados por coma)</label>
+            <input type="text" id="newProdColors" placeholder="Negro, Beige, Camel" value="Negro, Camel" class="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl" />
+          </div>
+
+          <!-- BOTÓN PARA SACAR FOTO CON CÁMARA O SUBIR DE GALERÍA -->
+          <div class="sm:col-span-3 space-y-2 pt-1 border-t border-stone-200">
+            <label class="font-bold text-zinc-900 block">📸 Foto de la Prenda (Cámara del celular o Galería):</label>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+              <label class="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-bold rounded-xl cursor-pointer shadow-sm transition-all text-xs">
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                <span>Sacar Foto / Elegir de Galería</span>
+                <input type="file" id="newProdFileInput" accept="image/*" onchange="handleImageFileSelect(event)" class="hidden" />
+              </label>
+
+              <div id="photoPreviewContainer" class="hidden items-center gap-2 bg-white p-2 rounded-xl border border-stone-200 w-full sm:w-auto">
+                <img id="photoPreviewImg" src="" class="w-12 h-14 rounded-lg object-cover border border-stone-300" />
+                <span class="text-[11px] text-emerald-700 font-bold">¡Foto cargada! ✅</span>
+              </div>
+            </div>
+
+            <div class="pt-1">
+              <span class="text-[10px] text-stone-400 block">O ingresá un enlace web (URL):</span>
+              <input type="url" id="newProdImage" placeholder="https://..." class="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-lg font-mono text-[11px]" />
+            </div>
+          </div>
+        </div>
+
+        <button onclick="saveNewProductFromModal()" class="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer">
+          + Publicar Prenda en la Tienda
+        </button>
+      </div>
+
+      <!-- Lista de Prendas para Modificar Precio o Eliminar -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-xs uppercase tracking-wider text-zinc-900">Prendas Actuales en Tienda:</h4>
+        <div id="adminProductsList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 11. Footer -->
+  <footer class="bg-zinc-950 text-stone-400 py-12 px-4 sm:px-6 lg:px-8 mt-20 border-t border-zinc-900">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-white text-zinc-950 font-black flex items-center justify-center">L</div>
+        <span class="font-bold text-white uppercase tracking-wider font-mono">LORELEY</span>
+        <span>• Showroom Gorriti 4850, Palermo</span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button onclick="openAdminLoginModal()" class="text-stone-400 hover:text-white font-bold underline flex items-center gap-1 cursor-pointer">
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+          <span>Acceso Administrador</span>
+        </button>
+        <p>© 2026 LORELEY. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DE PRODUCTOS, CARRITO, TALLES, ADMIN Y WHATSAPP -->
+  <script>
+    let products = [
+      {
+        id: "prod-1",
+        name: "Remera Heavy Cotton Oversize",
+        category: "Remeras & Tops",
+        price: 24900,
+        originalPrice: 29000,
+        images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&q=80"],
+        sizes: ["S", "M", "L", "XL"],
+        colors: ["Negro Profundo", "Blanco Óptico", "Crudo Vainilla", "Verde Oliva"],
+        description: "Algodón peinado 24/1 de 240g con cuello reforzado de 3cm y calce boxy fit.",
+        isNew: true,
+        isOffer: true
+      },
+      {
+        id: "prod-2",
+        name: "Buzo Hoodie Frisa Pesada 420g",
+        category: "Buzos & Hoodies",
+        price: 52900,
+        originalPrice: 62000,
+        images: ["https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&q=80"],
+        sizes: ["S", "M", "L", "XL"],
+        colors: ["Gris Melange", "Negro Washed", "Camel"],
+        description: "Frisa premium invisible de 420 gramos con interior afelpado super suave y capucha doble.",
+        isNew: false,
+        isOffer: true
+      },
+      {
+        id: "prod-3",
+        name: "Campera Puffer Térmica Matte",
+        category: "Camperas & Tapados",
+        price: 89000,
+        originalPrice: 105000,
+        images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80"],
+        sizes: ["XS", "S", "M", "L"],
+        colors: ["Negro Mate", "Beige Nude"],
+        description: "Microfibra impermeable acabado mate con relleno térmico siliconado y cintura regulable.",
+        isNew: true,
+        isOffer: true
+      },
+      {
+        id: "prod-4",
+        name: "Jean Wide Leg High Waist Vintage",
+        category: "Jeans & Denim",
+        price: 58500,
+        originalPrice: null,
+        images: ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&q=80"],
+        sizes: ["36", "38", "40", "42", "44"],
+        colors: ["Azul Vintage", "Celeste Claro", "Negro Desgastado"],
+        description: "100% denim rígido de 13.5 oz con lavado artesanal vintage y tiro alto.",
+        isNew: false,
+        isOffer: false
+      },
+      {
+        id: "prod-5",
+        name: "Pantalón Sastrero con Pinzas Roma",
+        category: "Pantalones & Cargos",
+        price: 49900,
+        originalPrice: 58000,
+        images: ["https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&q=80"],
+        sizes: ["S", "M", "L", "XL"],
+        colors: ["Negro", "Gris Topo", "Arena Beige"],
+        description: "Crepé sastrero con caída impecable y doble pinza delantera.",
+        isNew: true,
+        isOffer: true
+      },
+      {
+        id: "prod-6",
+        name: "Vestido Midi de Lino con Espalda Abierta",
+        category: "Vestidos & Monos",
+        price: 64900,
+        originalPrice: 75000,
+        images: ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80"],
+        sizes: ["XS", "S", "M", "L"],
+        colors: ["Lino Natural", "Negro", "Terracota"],
+        description: "Lino natural y rayón con breteles regulables y lazo cruzado en espalda.",
+        isNew: false,
+        isOffer: true
+      },
+      {
+        id: "prod-7",
+        name: "Tote Bag de Cuero Genuino Minimal",
+        category: "Accesorios",
+        price: 78000,
+        originalPrice: 92000,
+        images: ["https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80"],
+        sizes: ["Único"],
+        colors: ["Suela Marrón", "Negro"],
+        description: "100% cuero vacuno de curtido vegetal con compartimento para notebook de 14''.",
+        isNew: true,
+        isOffer: true
+      }
+    ];
+
+    const categories = ["Todos", "Remeras & Tops", "Buzos & Hoodies", "Camperas & Tapados", "Jeans & Denim", "Pantalones & Cargos", "Vestidos & Monos", "Accesorios"];
+
+    let currentCategory = "Todos";
+    let cart = [];
+    let activeModalProduct = null;
+    let selectedSize = "";
+    let selectedColor = "";
+    let deliveryType = "delivery";
+
+    function formatCurrency(val) {
+      return "$ " + val.toLocaleString("es-AR");
+    }
+
+    function renderCategories() {
+      const container = document.getElementById("categoryContainer");
+      container.innerHTML = categories.map(cat => `
+        <button onclick="setCategory('${cat}')" class="px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-xs ${currentCategory === cat ? 'bg-zinc-900 text-white scale-105' : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200'}">
+          ${cat}
+        </button>
+      `).join("");
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      renderCategories();
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const searchVal = (document.getElementById("searchInput")?.value || document.getElementById("searchInputMobile")?.value || "").toLowerCase().trim();
+
+      const filtered = products.filter(p => {
+        const matchesCat = currentCategory === "Todos" || p.category === currentCategory;
+        const matchesSearch = !searchVal || p.name.toLowerCase().includes(searchVal) || p.category.toLowerCase().includes(searchVal);
+        return matchesCat && matchesSearch;
+      });
+
+      document.getElementById("productCounter").innerText = `${filtered.length} prendas encontradas`;
+
+      grid.innerHTML = filtered.map(p => {
+        const discount = p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0;
+        return `
+          <div class="group bg-white rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
+            <div class="relative aspect-[3/4] bg-stone-100 overflow-hidden cursor-pointer" onclick="openProductModal('${p.id}')">
+              ${p.isOffer && discount > 0 ? `<span class="absolute top-3 left-3 px-3 py-1 bg-amber-600 text-white font-black text-[11px] rounded-full shadow-md">-${discount}% OFF</span>` : ''}
+              ${p.isNew ? `<span class="absolute top-3 right-3 px-2.5 py-0.5 bg-zinc-900 text-white font-bold text-[10px] rounded-full uppercase tracking-wider">Nuevo</span>` : ''}
+              <img src="${p.images[0]}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+              <div>
+                <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">${p.category}</span>
+                <h3 onclick="openProductModal('${p.id}')" class="font-bold text-sm text-zinc-900 line-clamp-1 cursor-pointer hover:text-stone-600">${p.name}</h3>
+                <div class="text-xs text-stone-500 pt-1 font-medium">Talles: <strong class="text-zinc-800">${p.sizes.join(", ")}</strong></div>
+              </div>
+
+              <div class="pt-1">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-lg font-black text-zinc-900">${formatCurrency(p.price)}</span>
+                  ${p.originalPrice ? `<span class="text-xs text-stone-400 line-through">${formatCurrency(p.originalPrice)}</span>` : ''}
+                </div>
+              </div>
+
+              <button onclick="openProductModal('${p.id}')" class="w-full py-3 px-4 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                <span>Elegir Talle</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    function filterProducts() { renderProducts(); }
+    function filterProductsMobile() { renderProducts(); }
+
+    function openProductModal(prodId) {
+      const p = products.find(x => x.id === prodId);
+      if (!p) return;
+      activeModalProduct = p;
+      selectedSize = p.sizes[0] || "";
+      selectedColor = p.colors[0] || "";
+
+      document.getElementById("modalImage").src = p.images[0];
+      document.getElementById("modalCategory").innerText = p.category;
+      document.getElementById("modalTitle").innerText = p.name;
+      document.getElementById("modalPrice").innerText = formatCurrency(p.price);
+      document.getElementById("modalOriginalPrice").innerText = p.originalPrice ? formatCurrency(p.originalPrice) : "";
+      document.getElementById("modalDescription").innerText = p.description;
+
+      // Render Sizes
+      const sizesContainer = document.getElementById("modalSizesContainer");
+      sizesContainer.innerHTML = p.sizes.map(s => `
+        <button onclick="selectModalSize('${s}')" id="size_${s}" class="size-btn min-w-[42px] h-10 px-3 rounded-xl font-bold text-xs border ${selectedSize === s ? 'bg-zinc-900 text-white border-zinc-900 shadow-md' : 'bg-white text-stone-700 border-stone-200'}">
+          ${s}
+        </button>
+      `).join("");
+
+      // Render Colors
+      const colorsContainer = document.getElementById("modalColorsContainer");
+      colorsContainer.innerHTML = p.colors.map(c => `
+        <button onclick="selectModalColor('${c}')" id="color_${c}" class="color-btn px-3 py-1.5 rounded-full text-xs font-semibold border ${selectedColor === c ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm' : 'bg-white text-stone-700 border-stone-200'}">
+          ${c}
+        </button>
+      `).join("");
+
+      document.getElementById("productModal").classList.remove("hidden");
+      document.getElementById("productModal").classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function selectModalSize(s) {
+      selectedSize = s;
+      document.querySelectorAll(".size-btn").forEach(b => {
+        b.className = "size-btn min-w-[42px] h-10 px-3 rounded-xl font-bold text-xs border bg-white text-stone-700 border-stone-200";
+      });
+      document.getElementById(`size_${s}`).className = "size-btn min-w-[42px] h-10 px-3 rounded-xl font-bold text-xs border bg-zinc-900 text-white border-zinc-900 shadow-md";
+    }
+
+    function selectModalColor(c) {
+      selectedColor = c;
+      document.querySelectorAll(".color-btn").forEach(b => {
+        b.className = "color-btn px-3 py-1.5 rounded-full text-xs font-semibold border bg-white text-stone-700 border-stone-200";
+      });
+      document.getElementById(`color_${c}`).className = "color-btn px-3 py-1.5 rounded-full text-xs font-semibold border bg-zinc-900 text-white border-zinc-900 shadow-sm";
+    }
+
+    function closeModal() {
+      document.getElementById("productModal").classList.add("hidden");
+      document.getElementById("productModal").classList.remove("flex");
+    }
+
+    function addCurrentModalToCart() {
+      if (!activeModalProduct) return;
+      const itemId = `${activeModalProduct.id}_${selectedSize}_${selectedColor}`;
+      const existing = cart.find(x => x.id === itemId);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          id: itemId,
+          product: activeModalProduct,
+          size: selectedSize,
+          color: selectedColor,
+          quantity: 1
+        });
+      }
+
+      closeModal();
+      renderCart();
+      toggleCart(true);
+    }
+
+    function toggleCart(forceOpen = false) {
+      const drawer = document.getElementById("cartDrawer");
+      const backdrop = document.getElementById("cartBackdrop");
+      const isOpen = !drawer.classList.contains("translate-x-full");
+
+      if (forceOpen || !isOpen) {
+        drawer.classList.remove("translate-x-full");
+        backdrop.classList.remove("hidden");
+      } else {
+        drawer.classList.add("translate-x-full");
+        backdrop.classList.add("hidden");
+      }
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cartItemsContainer");
+      const footer = document.getElementById("cartFooter");
+      const badge = document.getElementById("cartBadge");
+
+      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+      const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+
+      if (totalItems > 0) {
+        badge.innerText = totalItems;
+        badge.classList.remove("hidden");
+        footer.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+        footer.classList.add("hidden");
+      }
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 text-stone-400 space-y-2">
+            <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto text-stone-300"></i>
+            <p class="font-bold text-stone-700">Tu bolsa está vacía</p>
+            <p class="text-xs">¡Sumá tus prendas favoritas para armar tu pedido!</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = cart.map(item => `
+          <div class="flex gap-3 p-3 rounded-2xl border border-stone-100 bg-white shadow-2xs">
+            <img src="${item.product.images[0]}" alt="${item.product.name}" class="w-16 h-20 rounded-xl object-cover" />
+            <div class="flex-1 flex flex-col justify-between">
+              <div>
+                <h4 class="font-bold text-xs text-zinc-900 line-clamp-1">${item.product.name}</h4>
+                <div class="text-[11px] text-stone-500 font-medium">Talle: <strong>${item.size}</strong> • ${item.color}</div>
+              </div>
+              <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center border border-stone-200 rounded-lg overflow-hidden">
+                  <button onclick="changeQty('${item.id}', -1)" class="px-2 py-1 bg-stone-50 text-stone-600">-</button>
+                  <span class="px-3 text-xs font-bold">${item.quantity}</span>
+                  <button onclick="changeQty('${item.id}', 1)" class="px-2 py-1 bg-stone-50 text-stone-600">+</button>
+                </div>
+                <span class="font-black text-xs text-zinc-900">${formatCurrency(item.product.price * item.quantity)}</span>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      document.getElementById("cartSubtotal").innerText = formatCurrency(subtotal);
+      lucide.createIcons();
+    }
+
+    function changeQty(itemId, delta) {
+      const item = cart.find(x => x.id === itemId);
+      if (!item) return;
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        cart = cart.filter(x => x.id !== itemId);
+      }
+      renderCart();
+    }
+
+    function openCheckoutModal() {
+      toggleCart();
+      const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+      const shipping = deliveryType === "pickup" || subtotal >= 50000 ? 0 : 3500;
+      document.getElementById("checkoutGrandTotal").innerText = formatCurrency(subtotal + shipping);
+      document.getElementById("checkoutModal").classList.remove("hidden");
+      document.getElementById("checkoutModal").classList.add("flex");
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById("checkoutModal").classList.add("hidden");
+      document.getElementById("checkoutModal").classList.remove("flex");
+    }
+
+    function setDeliveryType(type) {
+      deliveryType = type;
+      if (type === "delivery") {
+        document.getElementById("btnDelivery").className = "p-3.5 rounded-2xl border-2 border-zinc-900 bg-stone-50 font-bold text-xs text-left";
+        document.getElementById("btnPickup").className = "p-3.5 rounded-2xl border border-stone-200 font-bold text-xs text-left";
+        document.getElementById("addressFields").classList.remove("hidden");
+      } else {
+        document.getElementById("btnPickup").className = "p-3.5 rounded-2xl border-2 border-zinc-900 bg-stone-50 font-bold text-xs text-left";
+        document.getElementById("btnDelivery").className = "p-3.5 rounded-2xl border border-stone-200 font-bold text-xs text-left";
+        document.getElementById("addressFields").classList.add("hidden");
+      }
+      openCheckoutModal();
+    }
+
+    function submitOrderToWhatsApp() {
+      const name = document.getElementById("custName").value.trim();
+      const phone = document.getElementById("custPhone").value.trim();
+      const address = document.getElementById("custAddress")?.value.trim() || "Showroom Palermo";
+      const notes = document.getElementById("custNotes")?.value.trim() || "";
+
+      if (!name || !phone) {
+        alert("Por favor completá tu nombre y teléfono de contacto.");
+        return;
+      }
+
+      if (deliveryType === "delivery" && !address) {
+        alert("Por favor ingresá la dirección de entrega.");
+        return;
+      }
+
+      const orderNum = "LOR-" + Math.floor(10000 + Math.random() * 90000);
+      const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+      const shipping = deliveryType === "pickup" || subtotal >= 50000 ? 0 : 3500;
+      const total = subtotal + shipping;
+
+      let msg = `✨ ¡Hola LORELEY! Quiero confirmar el siguiente pedido:\n\n`;
+      msg += `🛍️ *PEDIDO #${orderNum}*\n`;
+      msg += `👤 *Cliente:* ${name}\n`;
+      msg += `📱 *Teléfono:* ${phone}\n\n`;
+      msg += `📦 *ENTREGA:* ${deliveryType === 'delivery' ? 'Envío a Domicilio (' + address + ')' : 'Retiro en Showroom Palermo'}\n`;
+      if (notes) msg += `📝 *Notas:* ${notes}\n`;
+      msg += `\n👗 *PRENDAS:*\n`;
+
+      cart.forEach((it, idx) => {
+        msg += `${idx + 1}. *${it.product.name}* (Talle: *${it.size}*, Color: *${it.color}*) x ${it.quantity} = ${formatCurrency(it.product.price * it.quantity)}\n`;
+      });
+
+      msg += `\n───────────────────\n`;
+      msg += `*Subtotal:* ${formatCurrency(subtotal)}\n`;
+      msg += `*Envío:* ${formatCurrency(shipping)}\n`;
+      msg += `*TOTAL:* ${formatCurrency(total)}\n`;
+      msg += `───────────────────\n\n`;
+      msg += `¿Cómo coordinamos el pago? ¡Muchas gracias!`;
+
+      const waUrl = `https://wa.me/5491140648304?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, "_blank");
+
+      alert("¡Pedido generado con éxito! Se abrió WhatsApp con el detalle.");
+      cart = [];
+      renderCart();
+      closeCheckoutModal();
+    }
+
+    // ==========================================
+    // FUNCIONES DEL PANEL ADMINISTRADOR (INICIAR SESIÓN / AGREGAR PRENDAS)
+    // ==========================================
+    function openAdminLoginModal() {
+      document.getElementById("adminLoginModal").classList.remove("hidden");
+      document.getElementById("adminLoginModal").classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeAdminLoginModal() {
+      document.getElementById("adminLoginModal").classList.add("hidden");
+      document.getElementById("adminLoginModal").classList.remove("flex");
+    }
+
+    function handleAdminLogin() {
+      const email = document.getElementById("adminEmail").value.trim().toLowerCase();
+      const pass = document.getElementById("adminPass").value.trim();
+      const errorDiv = document.getElementById("loginErrorMsg");
+
+      if (email === "admin@loreley.com" && pass === "admin123") {
+        if (errorDiv) errorDiv.classList.add("hidden");
+        closeAdminLoginModal();
+        openAdminPanelModal();
+      } else {
+        if (errorDiv) {
+          errorDiv.classList.remove("hidden");
+          lucide.createIcons();
+        } else {
+          alert("Email o contraseña incorrectos.");
+        }
+      }
+    }
+
+    function openAdminPanelModal() {
+      renderAdminProductsList();
+      document.getElementById("adminPanelModal").classList.remove("hidden");
+      document.getElementById("adminPanelModal").classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeAdminPanelModal() {
+      document.getElementById("adminPanelModal").classList.add("hidden");
+      document.getElementById("adminPanelModal").classList.remove("flex");
+    }
+
+    function renderAdminProductsList() {
+      const container = document.getElementById("adminProductsList");
+      container.innerHTML = products.map((p, idx) => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+          <div class="flex items-center gap-3">
+            <img src="${p.images[0]}" class="w-10 h-12 rounded-lg object-cover" />
+            <div>
+              <h5 class="font-bold text-zinc-900">${p.name}</h5>
+              <span class="text-stone-500 font-bold">${formatCurrency(p.price)}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="changeProductPricePrompt('${p.id}')" class="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 font-bold rounded-lg">
+              Cambiar Precio
+            </button>
+            <button onclick="deleteProductFromAdmin('${p.id}')" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
+              ✕
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function changeProductPricePrompt(id) {
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      const newPrice = prompt(`Ingresá el nuevo precio para "${p.name}":`, p.price);
+      if (newPrice && !isNaN(newPrice)) {
+        p.price = parseFloat(newPrice);
+        renderAdminProductsList();
+        renderProducts();
+        alert("¡Precio actualizado exitosamente!");
+      }
+    }
+
+    function deleteProductFromAdmin(id) {
+      if (confirm("¿Estás seguro de eliminar esta prenda del catálogo?")) {
+        products = products.filter(x => x.id !== id);
+        renderAdminProductsList();
+        renderProducts();
+      }
+    }
+
+    let uploadedImageBase64 = "";
+
+    function handleImageFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedImageBase64 = e.target.result;
+        const previewContainer = document.getElementById("photoPreviewContainer");
+        const previewImg = document.getElementById("photoPreviewImg");
+        if (previewContainer && previewImg) {
+          previewImg.src = uploadedImageBase64;
+          previewContainer.classList.remove("hidden");
+          previewContainer.classList.add("flex");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveNewProductFromModal() {
+      const name = document.getElementById("newProdName").value.trim();
+      const category = document.getElementById("newProdCategory").value;
+      const price = parseFloat(document.getElementById("newProdPrice").value);
+      const sizesStr = document.getElementById("newProdSizes").value.trim();
+      const colorsStr = document.getElementById("newProdColors").value.trim();
+      const urlImage = document.getElementById("newProdImage")?.value.trim() || "";
+
+      if (!name || isNaN(price)) {
+        alert("Por favor completá el nombre y el precio.");
+        return;
+      }
+
+      const sizes = sizesStr ? sizesStr.split(",").map(s => s.trim()) : ["S", "M", "L"];
+      const colors = colorsStr ? colorsStr.split(",").map(c => c.trim()) : ["Negro"];
+      const finalImage = uploadedImageBase64 || urlImage || "https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80";
+
+      const newProduct = {
+        id: "prod-" + Date.now(),
+        name,
+        category,
+        price,
+        originalPrice: null,
+        images: [finalImage],
+        sizes,
+        colors,
+        description: "Prenda de diseño exclusivo confeccionada en alta calidad.",
+        isNew: true,
+        isOffer: false
+      };
+
+      products.unshift(newProduct);
+      renderProducts();
+      renderAdminProductsList();
+
+      document.getElementById("newProdName").value = "";
+      document.getElementById("newProdPrice").value = "";
+      if (document.getElementById("newProdImage")) document.getElementById("newProdImage").value = "";
+      uploadedImageBase64 = "";
+      const previewContainer = document.getElementById("photoPreviewContainer");
+      if (previewContainer) {
+        previewContainer.classList.add("hidden");
+        previewContainer.classList.remove("flex");
+      }
+
+      alert("¡Prenda publicada exitosamente con su foto! Ya aparece en la tienda.");
+    }
+
+    // Inicializar
+    renderCategories();
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
