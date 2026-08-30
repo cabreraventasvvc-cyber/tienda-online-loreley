@@ -124,7 +124,7 @@ export const storeConfig: StoreConfig = {
 
 ### Paso 3: Cargar los Productos del Cliente desde el Panel Admin
 1. Inicia el servidor (`npm run dev`).
-2. Ingresa al panel de administración: `http://localhost:3000/admin/login` (admin@loreley.com / admin123).
+2. Ingresa al panel de administración: `http://localhost:3000/admin/login` con el usuario configurado en `ADMIN_EMAIL` y `ADMIN_PASSWORD`.
 3. Entra a **Categorías** y crea las categorías del rubro (ej: Zapatillas, Botas, Sandalias).
 4. Entra a **Prendas & Talles** y carga los productos con sus fotos, precios, talles y colores.
 5. ¡La nueva tienda está lista para ser entregada al cliente!

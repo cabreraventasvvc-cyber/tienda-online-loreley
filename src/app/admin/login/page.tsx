@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { storeConfig } from "@/config/store.config";
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Sparkles } from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@loreley.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -119,20 +119,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Tarjeta de ayuda con credenciales de prueba */}
-          <div className="pt-4 border-t border-zinc-800/80 text-xs text-zinc-400 space-y-1.5 bg-zinc-950/40 p-3.5 rounded-2xl border border-zinc-800/50">
-            <div className="flex items-center gap-1.5 font-bold text-amber-400">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Credenciales de Demostración:</span>
-            </div>
-            <p className="text-[11px] font-mono text-zinc-300">
-              Email: <strong>admin@loreley.com</strong>
-            </p>
-            <p className="text-[11px] font-mono text-zinc-300">
-              Contraseña: <strong>admin123</strong>
-            </p>
-          </div>
 
           <div className="text-center pt-2">
             <Link

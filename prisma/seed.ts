@@ -17,17 +17,24 @@ async function main() {
   console.log("🧹 Tablas existentes limpiadas.");
 
   // 2. Crear Usuario Administrador Inicial
-  const passwordHash = await bcrypt.hash("admin123", 10);
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@loreley.com";
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminPassword || adminPassword.length < 8) {
+    throw new Error("Configurá ADMIN_PASSWORD con al menos 8 caracteres antes de ejecutar el seed.");
+  }
+
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
   const admin = await prisma.user.create({
     data: {
       name: "Administrador LORELEY",
-      email: "admin@loreley.com",
+      email: adminEmail,
       passwordHash,
       role: "ADMIN",
       active: true,
     },
   });
-  console.log(`👤 Usuario Administrador creado: ${admin.email} (Contraseña: admin123)`);
+  console.log(`👤 Usuario Administrador creado: ${admin.email}`);
 
   // 3. Crear Categorías de Indumentaria
   const categoriesData = [

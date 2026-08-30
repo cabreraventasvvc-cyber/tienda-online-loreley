@@ -34,8 +34,7 @@ npm run dev
 
 * **Tienda Pública:** [http://localhost:3000](http://localhost:3000)
 * **Panel de Administración:** [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-  - **Email:** `admin@loreley.com`
-  - **Contraseña:** `admin123`
+  - Configurá el usuario administrador con `ADMIN_EMAIL` y `ADMIN_PASSWORD` antes de ejecutar el seed.
 * **Configuración del Comercio en Vivo:** [http://localhost:3000/admin/configuracion](http://localhost:3000/admin/configuracion)
 
 ---

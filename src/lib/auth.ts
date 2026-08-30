@@ -14,7 +14,11 @@ export const ADMIN_COOKIE_NAME = "loreley_admin_session";
 const SESSION_SEPARATOR = ".";
 
 function getSessionSecret() {
-  return process.env.ADMIN_JWT_SECRET || "loreley_super_secret_jwt_key_2026_change_in_production";
+  if (!process.env.ADMIN_JWT_SECRET && process.env.NODE_ENV === "production") {
+    throw new Error("ADMIN_JWT_SECRET no configurado");
+  }
+
+  return process.env.ADMIN_JWT_SECRET || "loreley_local_dev_secret";
 }
 
 function toBase64Url(value: string) {
@@ -84,7 +88,7 @@ export function requireAdminSession(): AdminUserSession {
 }
 
 /**
- * Valida las credenciales de un administrador (consulta DB con fallback seguro para demo)
+ * Valida las credenciales de un administrador contra la base de datos.
  */
 export async function validateAdminCredentials(
   email: string,
@@ -110,20 +114,7 @@ export async function validateAdminCredentials(
       }
     }
   } catch (error) {
-    console.warn("Database not ready for auth check, evaluating demo fallback.");
-  }
-
-  // 2. Fallback de Administrador de Demostración (admin@loreley.com / admin123)
-  if (
-    (normalizedEmail === "admin@loreley.com" || normalizedEmail === "admin@aurastudio.com") &&
-    passwordPlain === "admin123"
-  ) {
-    return {
-      id: "admin-master-id",
-      email: "admin@loreley.com",
-      name: "Administrador LORELEY",
-      role: "ADMIN",
-    };
+    console.warn("Database not ready for auth check.");
   }
 
   return null;

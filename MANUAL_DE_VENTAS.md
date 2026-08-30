@@ -86,7 +86,7 @@ Solo necesitas su **Access Token** de producción:
 > 🔐 **Tu Panel de Control Privado (para agregar prendas, cambiar precios y ver pedidos):**
 > 👉 `https://www.tutienda.com/admin/login`
 > * **Email:** `contacto@tutienda.com`
-> * **Contraseña:** `admin123` *(la podés cambiar cuando quieras)*
+> * **Contraseña:** definida de forma privada para cada cliente.
 >
 > 📲 **Cómo tenerla como App en tu celular:**
 > 1. Abrí el link de tu tienda en el navegador de tu teléfono.

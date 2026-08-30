@@ -855,21 +855,11 @@
     }
 
     function handleAdminLogin() {
-      const email = document.getElementById("adminEmail").value.trim().toLowerCase();
-      const pass = document.getElementById("adminPass").value.trim();
       const errorDiv = document.getElementById("loginErrorMsg");
-
-      if (email === "admin@loreley.com" && pass === "admin123") {
-        if (errorDiv) errorDiv.classList.add("hidden");
-        closeAdminLoginModal();
-        openAdminPanelModal();
-      } else {
-        if (errorDiv) {
-          errorDiv.classList.remove("hidden");
-          lucide.createIcons();
-        } else {
-          alert("Email o contraseña incorrectos.");
-        }
+      if (errorDiv) {
+        errorDiv.classList.remove("hidden");
+        errorDiv.textContent = "El panel administrador seguro está disponible en /admin/login.";
+        lucide.createIcons();
       }
     }
 
