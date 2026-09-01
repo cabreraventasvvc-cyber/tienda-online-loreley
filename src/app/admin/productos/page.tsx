@@ -8,14 +8,11 @@ import {
   Edit, 
   Trash2, 
   X, 
-  Check, 
-  ShoppingBag, 
-  Tag, 
-  Sparkles, 
   AlertCircle,
-  Eye,
-  Layers,
-  Image as ImageIcon
+  Camera,
+  Image as ImageIcon,
+  Link,
+  Upload
 } from "lucide-react";
 
 interface ProductFormData {
@@ -49,6 +46,46 @@ const standardColorsList = [
   { name: "Rojo / Bordó", hex: "#991b1b" },
 ];
 
+const IMAGE_MAX_SIZE = 1200;
+const IMAGE_QUALITY = 0.82;
+
+const compressImageFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("El archivo elegido no es una imagen."));
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new window.Image();
+      img.onload = () => {
+        const scale = Math.min(1, IMAGE_MAX_SIZE / Math.max(img.width, img.height));
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("No se pudo procesar la imagen."));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", IMAGE_QUALITY));
+      };
+      img.onerror = () => reject(new Error("No se pudo leer la imagen."));
+      img.src = String(reader.result);
+    };
+
+    reader.onerror = () => reject(new Error("No se pudo cargar el archivo."));
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -80,6 +117,7 @@ export default function AdminProductsPage() {
   const [newColorName, setNewColorName] = useState("");
   const [newColorHex, setNewColorHex] = useState("#000000");
   const [saving, setSaving] = useState(false);
+  const [imageProcessingIndex, setImageProcessingIndex] = useState<number | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Cargar datos
@@ -271,6 +309,20 @@ export default function AdminProductsPage() {
     const updated = [...formData.images];
     updated[index] = url;
     setFormData((prev) => ({ ...prev, images: updated }));
+  };
+
+  const handleImageFileSelection = async (index: number, file?: File) => {
+    if (!file) return;
+
+    setImageProcessingIndex(index);
+    try {
+      const compressedImage = await compressImageFile(file);
+      updateImageUrl(index, compressedImage);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "No se pudo procesar la imagen.");
+    } finally {
+      setImageProcessingIndex(null);
+    }
   };
 
   const addImageField = () => {
@@ -639,27 +691,95 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* GESTOR DE FOTOS (URLs) */}
+              {/* GESTOR DE FOTOS */}
               <div className="space-y-2 pt-2 border-t border-stone-100">
-                <div className="flex justify-between items-center">
-                  <label className="font-bold text-stone-800 uppercase tracking-wider block">Fotos de la Prenda (URLs de imagen)</label>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <label className="font-bold text-stone-800 uppercase tracking-wider block">
+                    Fotos de la Prenda
+                  </label>
                   <button type="button" onClick={addImageField} className="text-zinc-900 font-bold hover:underline">
                     + Agregar otra foto
                   </button>
                 </div>
                 {formData.images.map((imgUrl, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input
-                      type="url"
-                      value={imgUrl}
-                      onChange={(e) => updateImageUrl(idx, e.target.value)}
-                      placeholder="https://images.unsplash.com/photo-..."
-                      className="flex-1 px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs"
-                    />
-                    {formData.images.length > 1 && (
-                      <button type="button" onClick={() => removeImageField(idx)} className="text-red-500 font-bold p-1">
-                        ✕
-                      </button>
+                  <div key={idx} className="rounded-2xl border border-stone-200 bg-stone-50 p-3 space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-[96px_1fr] gap-3">
+                      <div className="w-full sm:w-24 aspect-square rounded-xl overflow-hidden bg-white border border-stone-200 flex items-center justify-center">
+                        {imgUrl ? (
+                          <img
+                            src={imgUrl}
+                            alt={`Vista previa ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <ImageIcon className="w-7 h-7 text-stone-300" />
+                        )}
+                      </div>
+
+                      <div className="space-y-2 min-w-0">
+                        <label className="flex items-center gap-2 text-[11px] font-bold text-stone-700 uppercase tracking-wider">
+                          <Link className="w-3.5 h-3.5" />
+                          URL de imagen
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="url"
+                            value={imgUrl.startsWith("data:image/") ? "" : imgUrl}
+                            onChange={(e) => updateImageUrl(idx, e.target.value)}
+                            placeholder="https://images.unsplash.com/photo-..."
+                            className="flex-1 min-w-0 px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs"
+                          />
+                          {formData.images.length > 1 && (
+                            <button type="button" onClick={() => removeImageField(idx)} className="shrink-0 text-red-500 font-bold p-2">
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                        {imgUrl.startsWith("data:image/") && (
+                          <p className="text-[10px] text-emerald-700 font-bold">
+                            Imagen cargada desde el dispositivo y optimizada automaticamente.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <label
+                        htmlFor={`product-gallery-${idx}`}
+                        className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-white hover:bg-stone-100 border border-stone-200 rounded-xl font-bold cursor-pointer transition-colors"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Elegir de galeria
+                      </label>
+                      <input
+                        id={`product-gallery-${idx}`}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImageFileSelection(idx, e.target.files?.[0])}
+                      />
+
+                      <label
+                        htmlFor={`product-camera-${idx}`}
+                        className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-900 rounded-xl font-bold cursor-pointer transition-colors"
+                      >
+                        <Camera className="w-4 h-4" />
+                        Sacar foto
+                      </label>
+                      <input
+                        id={`product-camera-${idx}`}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={(e) => handleImageFileSelection(idx, e.target.files?.[0])}
+                      />
+                    </div>
+
+                    {imageProcessingIndex === idx && (
+                      <p className="text-[10px] font-bold text-stone-500">
+                        Preparando imagen para la tienda...
+                      </p>
                     )}
                   </div>
                 ))}

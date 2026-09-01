@@ -5,6 +5,11 @@ import { storeConfig } from "@/config/store.config";
 import { CartItem, CustomerData } from "@/types";
 import { validateCouponForCart } from "@/lib/coupons";
 
+const getMercadoPagoImageUrl = (image?: string) => {
+  if (!image || !/^https?:\/\//i.test(image)) return undefined;
+  return image;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -66,7 +71,7 @@ export async function POST(req: NextRequest) {
                 id: "pedido-loreley",
                 title: `Pedido ${orderNumber}${appliedCoupon ? ` con cupón ${appliedCoupon.code}` : ""}`.slice(0, 120),
                 description: "Compra de prendas en TIENDA LORELEY",
-                picture_url: items[0]?.product.images[0] || undefined,
+                picture_url: getMercadoPagoImageUrl(items[0]?.product.images[0]),
                 quantity: 1,
                 unit_price: Number(Math.max(1, serverSubtotal - discountTotal)),
                 currency_id: storeConfig.currency.code || "ARS",
@@ -81,7 +86,7 @@ export async function POST(req: NextRequest) {
                 id: item.id || item.product.id,
                 title: title.slice(0, 120),
                 description: item.product.description?.slice(0, 200) || title,
-                picture_url: item.product.images[0] || undefined,
+                picture_url: getMercadoPagoImageUrl(item.product.images[0]),
                 quantity: item.quantity,
                 unit_price: Number(item.product.price),
                 currency_id: storeConfig.currency.code || "ARS",
